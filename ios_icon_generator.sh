@@ -32,6 +32,35 @@ F_EXT=$(echo $1 | sed 's/^.*\.\([^\.]*\)$/\1/')
 
 L_SIZE=(20 40 60 29 58 76 87 80 120 152 167 180 1024)
 
-for n_size in ${L_SIZE[@]}; do
-	convert -resize ${n_size}x${n_size} $1 $2/${F_NAME}_${n_size}.${F_EXT}
+L_ARGS=(
+	"1024 1"
+	"20 1"
+	"20 2"
+	"20 3"
+	"29 1"
+	"29 2"
+	"29 3"
+	"40 1"
+	"40 2"
+	"40 3"
+	"60 2"
+	"60 3"
+	"76 1"
+	"76 2"
+	"83.5 2"
+)
+
+for i in $(seq 0 ${#L_ARGS[@]}); do
+	j=0
+	for v in ${L_ARGS[$i]}; do
+		if [ $j -eq 0 ]; then
+			n_basesize=$v
+		elif [ $j -eq 1 ]; then
+			n_density=$v
+		fi
+		j=$((j+1))
+	done
+
+	n_size=$(ruby -e "puts (${n_basesize}*${n_density}).to_i")
+	convert -resize ${n_size}x${n_size} $1 $2/${F_NAME}_${n_basesize}x${n_basesize}@${n_density}x.${F_EXT}
 done
